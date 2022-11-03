@@ -1,11 +1,29 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../firebase";
-import SignOut from "./SignOut";
+// import SignOut from "./SignOut";
 import SendMessage from "./SendMessage";
+
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+
+// TODO: Replace the following with your app's Firebase project configuration
+// See: https://firebase.google.com/docs/web/learn-more#config-object
+const firebaseConfig = {
+  // ...
+  // The value of `databaseURL` depends on the location of the database
+  databaseURL: "https://DATABASE_NAME.firebaseio.com",
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Initialize Realtime Database and get a reference to the service
+const database = getDatabase(app);
+
 function Line() {
   const [messages, setMessages] = useState([]);
   useEffect(() => {
-    db.collection("messages")
+    database
+      .collection("messages")
       .orderBy("createdAt")
       .limit(50)
       .onSnapshot((snapshot) => {
@@ -14,7 +32,6 @@ function Line() {
   }, []);
   return (
     <div>
-      <SignOut />
       <div className="msgs">
         {messages.map(({ id, text, photoURL, uid }) => (
           <div>
